@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {
-  LANE_Y, PLAYER_X, PLAYER_SIZE, PLAYER_SLIDE_HEIGHT,
-  LANE_CHANGE_MS, JUMP_HEIGHT_PX, JUMP_DURATION_MS, SLIDE_DURATION_MS
+  LANE_Y, PLAYER_X, PLAYER_SIZE,
+  LANE_CHANGE_MS, JUMP_HEIGHT_PX, JUMP_DURATION_MS
 } from '../config/gameConfig.js';
 
 export default class Player {
@@ -9,20 +9,28 @@ export default class Player {
     this.scene = scene;
     this.laneIndex = 1;
     this.isJumping = false;
-    this.isSliding = false;
     this.invulnUntil = 0;
 
     this.sprite = scene.physics.add.sprite(PLAYER_X, LANE_Y[this.laneIndex], 'player_run0');
     this.sprite.setOrigin(0.5, 1);
+    this.sprite.setDisplaySize(PLAYER_SIZE, PLAYER_SIZE);
     this.sprite.body.setAllowGravity(false);
-    this.sprite.body.setSize(PLAYER_SIZE * 0.7, PLAYER_SIZE * 0.9);
-    this.sprite.body.setOffset(PLAYER_SIZE * 0.15, PLAYER_SIZE * 0.1);
+
+    const src = this.sprite.texture.getSourceImage();
+    this.nativeW = src.width;
+    this.nativeH = src.height;
+    this.applyStandingBody();
 
     if (scene.anims.exists('player_run')) {
       this.sprite.play('player_run');
     }
 
     this.baseY = LANE_Y[this.laneIndex];
+  }
+
+  applyStandingBody() {
+    this.sprite.body.setSize(this.nativeW * 0.7, this.nativeH * 0.9);
+    this.sprite.body.setOffset(this.nativeW * 0.15, this.nativeH * 0.1);
   }
 
   changeLane(direction) {
@@ -40,7 +48,7 @@ export default class Player {
   }
 
   jump() {
-    if (this.isJumping || this.isSliding) return;
+    if (this.isJumping) return;
     this.isJumping = true;
 
     this.scene.tweens.add({
@@ -64,26 +72,8 @@ export default class Player {
     });
   }
 
-  slide() {
-    if (this.isSliding || this.isJumping) return;
-    this.isSliding = true;
-
-    this.sprite.body.setSize(PLAYER_SIZE * 0.7, PLAYER_SLIDE_HEIGHT);
-    this.sprite.body.setOffset(PLAYER_SIZE * 0.15, PLAYER_SIZE - PLAYER_SLIDE_HEIGHT);
-    this.sprite.setScale(1, PLAYER_SLIDE_HEIGHT / PLAYER_SIZE);
-
-    this.scene.time.delayedCall(SLIDE_DURATION_MS, () => {
-      this.sprite.setScale(1, 1);
-      this.sprite.body.setSize(PLAYER_SIZE * 0.7, PLAYER_SIZE * 0.9);
-      this.sprite.body.setOffset(PLAYER_SIZE * 0.15, PLAYER_SIZE * 0.1);
-      this.isSliding = false;
-    });
-  }
-
   get state() {
-    if (this.isJumping) return 'jump';
-    if (this.isSliding) return 'slide';
-    return 'run';
+    return this.isJumping ? 'jump' : 'run';
   }
 
   setInvulnerable(durationMs) {

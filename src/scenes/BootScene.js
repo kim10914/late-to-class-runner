@@ -1,12 +1,15 @@
 import Phaser from 'phaser';
-import { OBSTACLE_TYPES, COLORS, PLAYER_SIZE } from '../config/gameConfig.js';
+import { OBSTACLE_TYPES, COLORS, PLAYER_SIZE, GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig.js';
 
 // 슬롯별 size · fallback 색 정의. PNG 파일이 public/assets/{key}.png 로 있으면 사용,
 // 없으면 makeRectTexture() 가 동일한 key 로 단색 사각형을 만들어준다.
 const ASSET_MANIFEST = [
   { key: 'player_run0', w: PLAYER_SIZE, h: PLAYER_SIZE, color: COLORS.player },
   { key: 'player_run1', w: PLAYER_SIZE, h: PLAYER_SIZE, color: COLORS.player },
-  { key: 'item_circle', w: 28, h: 28, color: 0xffd166 }
+  { key: 'item_circle', w: 28, h: 28, color: 0xffd166 },
+  { key: 'bg_stage1', w: GAME_WIDTH, h: GAME_HEIGHT, color: 0x2c3e50 },
+  { key: 'bg_stage2', w: GAME_WIDTH, h: GAME_HEIGHT, color: 0x34495e },
+  { key: 'bg_stage3', w: GAME_WIDTH, h: GAME_HEIGHT, color: 0x1e3a5f }
 ];
 
 for (const def of Object.values(OBSTACLE_TYPES)) {
@@ -51,7 +54,7 @@ export default class BootScene extends Phaser.Scene {
       });
     }
 
-    this.scene.start('Menu');
+    this.scene.start('Title');
   }
 
   makeRectTexture(key, w, h, color) {

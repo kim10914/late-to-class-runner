@@ -24,10 +24,10 @@ export default class MenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     const instructions = [
-      '← →  또는 A / D  : 레인 이동',
-      'Space          : 점프',
-      '↓ 또는 S       : 슬라이드',
-      'R              : 재시작'
+      '↑ ↓     : 레인 이동',
+      'Space   : 점프',
+      'S       : 슬라이드',
+      'R       : 재시작'
     ];
     this.add.text(cx, cy + 10, instructions.join('\n'), {
       fontFamily: 'Consolas, monospace',

@@ -66,27 +66,9 @@ export default class GameScene extends Phaser.Scene {
 
   bindInput() {
     const kb = this.input.keyboard;
-    this.keys = kb.addKeys({
-      left:  Phaser.Input.Keyboard.KeyCodes.LEFT,
-      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-      A: Phaser.Input.Keyboard.KeyCodes.A,
-      D: Phaser.Input.Keyboard.KeyCodes.D,
-      up: Phaser.Input.Keyboard.KeyCodes.UP,
-      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-      W: Phaser.Input.Keyboard.KeyCodes.W,
-      S: Phaser.Input.Keyboard.KeyCodes.S,
-      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      R: Phaser.Input.Keyboard.KeyCodes.R
-    });
-
-    kb.on('keydown-LEFT',  () => this.player.changeLane(-1));
-    kb.on('keydown-A',     () => this.player.changeLane(-1));
-    kb.on('keydown-RIGHT', () => this.player.changeLane(+1));
-    kb.on('keydown-D',     () => this.player.changeLane(+1));
+    kb.on('keydown-UP',    () => this.player.changeLane(-1));
+    kb.on('keydown-DOWN',  () => this.player.changeLane(+1));
     kb.on('keydown-SPACE', () => this.player.jump());
-    kb.on('keydown-UP',    () => this.player.jump());
-    kb.on('keydown-W',     () => this.player.jump());
-    kb.on('keydown-DOWN',  () => this.player.slide());
     kb.on('keydown-S',     () => this.player.slide());
     kb.on('keydown-R',     () => this.scene.restart());
   }

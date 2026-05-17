@@ -12,11 +12,15 @@ export default class Player {
     this.isSliding = false;
     this.invulnUntil = 0;
 
-    this.sprite = scene.physics.add.sprite(PLAYER_X, LANE_Y[this.laneIndex], 'player_rect');
+    this.sprite = scene.physics.add.sprite(PLAYER_X, LANE_Y[this.laneIndex], 'player_run0');
     this.sprite.setOrigin(0.5, 1);
     this.sprite.body.setAllowGravity(false);
     this.sprite.body.setSize(PLAYER_SIZE * 0.7, PLAYER_SIZE * 0.9);
     this.sprite.body.setOffset(PLAYER_SIZE * 0.15, PLAYER_SIZE * 0.1);
+
+    if (scene.anims.exists('player_run')) {
+      this.sprite.play('player_run');
+    }
 
     this.baseY = LANE_Y[this.laneIndex];
   }

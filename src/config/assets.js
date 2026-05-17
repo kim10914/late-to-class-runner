@@ -23,10 +23,11 @@ export const IMAGE_MANIFEST = [...STATIC_IMAGE_MANIFEST, ...OBSTACLE_IMAGES];
 // BGM — 메뉴용 1 + 난이도별 3
 export const BGM_KEYS = ['bgm_menu', 'bgm_easy', 'bgm_normal', 'bgm_hard'];
 
-// SFX
+// SFX. sfx_count 는 의도적으로 제외 — 카운트다운 비프 없음.
+// (Countdown 에서 호출은 남아있지만 파일 없으면 자동 무시되어 향후 재추가 시 파일만 넣으면 동작)
 export const SFX_KEYS = [
   'sfx_jump', 'sfx_lane', 'sfx_hit',
-  'sfx_count', 'sfx_go',
+  'sfx_go',
   'sfx_clear', 'sfx_fail',
   'sfx_ui'
 ];

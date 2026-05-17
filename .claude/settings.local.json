@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "PowerShell(git config --global user.name)",
-      "PowerShell(git config --global user.email)"
+      "PowerShell(git config --global user.email)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

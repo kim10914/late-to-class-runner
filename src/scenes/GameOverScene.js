@@ -1,27 +1,8 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DIFFICULTIES, COLORS } from '../config/gameConfig.js';
-
-const BEST_TIME_PREFIX = 'best_time_';
-
-function formatTime(seconds) {
-  if (seconds == null || !isFinite(seconds)) return '--:--.--';
-  const safe = Math.max(0, seconds);
-  const m = Math.floor(safe / 60);
-  const s = Math.floor(safe % 60);
-  const cs = Math.floor((safe * 100) % 100);
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
-}
-
-function loadBestTime(difficultyId) {
-  const raw = localStorage.getItem(BEST_TIME_PREFIX + difficultyId);
-  if (!raw) return null;
-  const n = parseFloat(raw);
-  return isFinite(n) ? n : null;
-}
-
-function saveBestTime(difficultyId, time) {
-  localStorage.setItem(BEST_TIME_PREFIX + difficultyId, String(time));
-}
+import { AudioManager } from '../audio/AudioManager.js';
+import { formatTime } from '../util/format.js';
+import { loadBestTime, tryUpdateBestTime } from '../util/storage.js';
 
 export default class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -66,14 +47,7 @@ export default class GameOverScene extends Phaser.Scene {
       }).setOrigin(0.5);
     }
 
-    let newRecord = false;
-    if (isWin) {
-      const prevBest = loadBestTime(this.difficultyId);
-      if (prevBest == null || this.finishTime < prevBest) {
-        saveBestTime(this.difficultyId, this.finishTime);
-        newRecord = true;
-      }
-    }
+    const newRecord = isWin && tryUpdateBestTime(this.difficultyId, this.finishTime);
 
     const timeLabel = isWin ? '기록' : '도달 시간';
     this.add.text(cx, cy - 60, timeLabel, {
@@ -126,5 +100,8 @@ export default class GameOverScene extends Phaser.Scene {
 
     this.input.keyboard.once('keydown-R',   () => this.scene.start('Game', { difficultyId: this.difficultyId }));
     this.input.keyboard.once('keydown-ESC', () => this.scene.start('Menu'));
+    this.input.keyboard.on('keydown-M',     () => AudioManager.toggleMute());
+
+    AudioManager.playBgm(this, 'bgm_menu');
   }
 }

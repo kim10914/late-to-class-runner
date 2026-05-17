@@ -1,22 +1,8 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DIFFICULTIES, DIFFICULTY_ORDER } from '../config/gameConfig.js';
-
-const BEST_TIME_PREFIX = 'best_time_';
-
-function formatTime(seconds) {
-  if (seconds == null || !isFinite(seconds)) return '--:--.--';
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  const cs = Math.floor((seconds * 100) % 100);
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
-}
-
-function loadBestTime(difficultyId) {
-  const raw = localStorage.getItem(BEST_TIME_PREFIX + difficultyId);
-  if (!raw) return null;
-  const n = parseFloat(raw);
-  return isFinite(n) ? n : null;
-}
+import { AudioManager } from '../audio/AudioManager.js';
+import { formatTime } from '../util/format.js';
+import { loadBestTime } from '../util/storage.js';
 
 export default class MenuScene extends Phaser.Scene {
   constructor() {
@@ -53,6 +39,9 @@ export default class MenuScene extends Phaser.Scene {
     kb.on('keydown-ENTER', () => this.startGame());
     kb.on('keydown-SPACE', () => this.startGame());
     kb.on('keydown-ESC',   () => this.scene.start('Title'));
+    kb.on('keydown-M',     () => AudioManager.toggleMute());
+
+    AudioManager.playBgm(this, 'bgm_menu');
   }
 
   buildStartButton() {
@@ -131,6 +120,7 @@ export default class MenuScene extends Phaser.Scene {
   moveSelection(direction) {
     this.selectedIndex = Phaser.Math.Wrap(this.selectedIndex + direction, 0, this.cards.length);
     this.refreshSelection();
+    AudioManager.playSfx(this, 'sfx_ui', { volume: 0.5 });
   }
 
   refreshSelection() {
@@ -143,6 +133,7 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   startGame() {
+    AudioManager.playSfx(this, 'sfx_ui');
     const difficultyId = this.cards[this.selectedIndex].difficultyId;
     this.scene.start('Game', { difficultyId });
   }

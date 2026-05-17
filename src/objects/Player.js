@@ -3,6 +3,7 @@ import {
   LANE_Y, PLAYER_X, PLAYER_SIZE,
   LANE_CHANGE_MS, JUMP_HEIGHT_PX, JUMP_DURATION_MS
 } from '../config/gameConfig.js';
+import { AudioManager } from '../audio/AudioManager.js';
 
 export default class Player {
   constructor(scene) {
@@ -39,6 +40,8 @@ export default class Player {
     this.laneIndex = target;
     this.baseY = LANE_Y[target];
 
+    AudioManager.playSfx(this.scene, 'sfx_lane', { volume: 0.6 });
+
     this.scene.tweens.add({
       targets: this.sprite,
       y: this.isJumping ? this.baseY - JUMP_HEIGHT_PX : this.baseY,
@@ -50,6 +53,7 @@ export default class Player {
   jump() {
     if (this.isJumping) return;
     this.isJumping = true;
+    AudioManager.playSfx(this.scene, 'sfx_jump');
 
     this.scene.tweens.add({
       targets: this.sprite,

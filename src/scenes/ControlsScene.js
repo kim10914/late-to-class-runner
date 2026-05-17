@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig.js';
+import { AudioManager } from '../audio/AudioManager.js';
 
 const ROWS = [
   { keys: '↑ ↓',   desc: '레인 이동 (상 / 중 / 하)' },
@@ -86,9 +87,13 @@ export default class ControlsScene extends Phaser.Scene {
     kb.on('keydown-ESC',   () => this.goBack());
     kb.on('keydown-ENTER', () => this.goBack());
     kb.on('keydown-SPACE', () => this.goBack());
+    kb.on('keydown-M',     () => AudioManager.toggleMute());
+
+    AudioManager.playBgm(this, 'bgm_menu');
   }
 
   goBack() {
+    AudioManager.playSfx(this, 'sfx_ui');
     this.scene.start('Title');
   }
 }

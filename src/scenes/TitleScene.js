@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig.js';
+import { AudioManager } from '../audio/AudioManager.js';
 
 export default class TitleScene extends Phaser.Scene {
   constructor() {
@@ -25,14 +26,15 @@ export default class TitleScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.buttons = [
-      this.buildButton(cx, GAME_HEIGHT * 0.58,        '게임 시작',          () => this.scene.start('Menu')),
-      this.buildButton(cx, GAME_HEIGHT * 0.58 + 160,  '조작법 알아보기',     () => this.scene.start('Controls'))
+      this.buildButton(cx, GAME_HEIGHT * 0.54,        '게임 시작',         () => this.scene.start('Menu')),
+      this.buildButton(cx, GAME_HEIGHT * 0.54 + 140,  '조작법 알아보기',    () => this.scene.start('Controls')),
+      this.buildButton(cx, GAME_HEIGHT * 0.54 + 280,  '설정',             () => this.scene.start('Settings'))
     ];
 
     this.selectedIndex = 0;
     this.refreshSelection();
 
-    this.add.text(cx, GAME_HEIGHT - 60, '↑ ↓ 선택   Enter 확인', {
+    this.add.text(cx, GAME_HEIGHT - 60, '↑ ↓ 선택   Enter 확인   M 음소거', {
       fontFamily: 'Consolas, monospace',
       fontSize: '28px',
       color: '#666'
@@ -43,6 +45,9 @@ export default class TitleScene extends Phaser.Scene {
     kb.on('keydown-DOWN',  () => this.moveSelection(+1));
     kb.on('keydown-ENTER', () => this.activate());
     kb.on('keydown-SPACE', () => this.activate());
+    kb.on('keydown-M',     () => AudioManager.toggleMute());
+
+    AudioManager.playBgm(this, 'bgm_menu');
   }
 
   buildButton(x, y, label, onClick) {
@@ -69,6 +74,7 @@ export default class TitleScene extends Phaser.Scene {
   moveSelection(direction) {
     this.selectedIndex = Phaser.Math.Wrap(this.selectedIndex + direction, 0, this.buttons.length);
     this.refreshSelection();
+    AudioManager.playSfx(this, 'sfx_ui', { volume: 0.5 });
   }
 
   refreshSelection() {
@@ -82,6 +88,9 @@ export default class TitleScene extends Phaser.Scene {
 
   activate() {
     const btn = this.buttons[this.selectedIndex];
-    if (btn && btn.onClick) btn.onClick();
+    if (btn && btn.onClick) {
+      AudioManager.playSfx(this, 'sfx_ui');
+      btn.onClick();
+    }
   }
 }

@@ -1,25 +1,5 @@
 import Phaser from 'phaser';
-import { OBSTACLE_TYPES, COLORS, PLAYER_SIZE, GAME_WIDTH, GAME_HEIGHT } from '../config/gameConfig.js';
-
-// 슬롯별 size · fallback 색 정의. PNG 파일이 public/assets/{key}.png 로 있으면 사용,
-// 없으면 makeRectTexture() 가 동일한 key 로 단색 사각형을 만들어준다.
-const ASSET_MANIFEST = [
-  { key: 'player_run0', w: PLAYER_SIZE, h: PLAYER_SIZE, color: COLORS.player },
-  { key: 'player_run1', w: PLAYER_SIZE, h: PLAYER_SIZE, color: COLORS.player },
-  { key: 'item_circle', w: 28, h: 28, color: 0xffd166 },
-  { key: 'bg_stage1', w: GAME_WIDTH, h: GAME_HEIGHT, color: 0x2c3e50 },
-  { key: 'bg_stage2', w: GAME_WIDTH, h: GAME_HEIGHT, color: 0x34495e },
-  { key: 'bg_stage3', w: GAME_WIDTH, h: GAME_HEIGHT, color: 0x1e3a5f }
-];
-
-for (const def of Object.values(OBSTACLE_TYPES)) {
-  ASSET_MANIFEST.push({
-    key: `obs_${def.key}`,
-    w: def.w,
-    h: def.h,
-    color: def.color
-  });
-}
+import { IMAGE_MANIFEST, BGM_KEYS, SFX_KEYS, PLAYER_RUN_ANIM } from '../config/assets.js';
 
 export default class BootScene extends Phaser.Scene {
   constructor() {
@@ -27,30 +7,34 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    for (const a of ASSET_MANIFEST) {
+    for (const a of IMAGE_MANIFEST) {
       this.load.image(a.key, `assets/${a.key}.png`);
     }
+    for (const key of BGM_KEYS) {
+      this.load.audio(key, [`assets/${key}.mp3`]);
+    }
+    for (const key of SFX_KEYS) {
+      this.load.audio(key, [`assets/${key}.mp3`]);
+    }
     this.load.on('loaderror', (file) => {
-      console.warn(`[BootScene] asset missing: ${file.src} — using rectangle placeholder`);
+      console.warn(`[BootScene] asset missing: ${file.src}`);
     });
   }
 
   create() {
-    for (const a of ASSET_MANIFEST) {
+    // 없는 이미지는 단색 사각형으로 fallback
+    for (const a of IMAGE_MANIFEST) {
       if (!this.textures.exists(a.key)) {
         this.makeRectTexture(a.key, a.w, a.h, a.color);
       }
     }
 
-    if (!this.anims.exists('player_run')) {
+    if (!this.anims.exists(PLAYER_RUN_ANIM.key)) {
       this.anims.create({
-        key: 'player_run',
-        frames: [
-          { key: 'player_run0' },
-          { key: 'player_run1' }
-        ],
-        frameRate: 8,
-        repeat: -1
+        key: PLAYER_RUN_ANIM.key,
+        frames: PLAYER_RUN_ANIM.frames.map(key => ({ key })),
+        frameRate: PLAYER_RUN_ANIM.frameRate,
+        repeat: PLAYER_RUN_ANIM.repeat
       });
     }
 
